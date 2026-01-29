@@ -10,6 +10,7 @@ php artisan db:seed --class=Database\\Seeders\\ExpenseCategorySeeder --force
 
 # Cache optimization
 echo "Optimizing..."
+php artisan config:clear
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
