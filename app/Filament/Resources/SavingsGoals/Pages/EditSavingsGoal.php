@@ -16,4 +16,13 @@ class EditSavingsGoal extends EditRecord
             DeleteAction::make(),
         ];
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+    protected function getSavedNotificationTitle(): ?string
+    {
+        return 'Meta de ahorro actualizada exitosamente';
+    }
 }

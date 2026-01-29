@@ -16,4 +16,13 @@ class EditSaving extends EditRecord
             DeleteAction::make(),
         ];
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+    protected function getSavedNotificationTitle(): ?string
+    {
+        return 'Ahorro actualizado exitosamente';
+    }
 }
