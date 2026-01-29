@@ -22,33 +22,24 @@ class BalanceTrendChart extends ChartWidget
         $months = [];
         $balances = [];
 
-        // Obtener datos de los últimos 6 meses
         for ($i = 5; $i >= 0; $i--) {
             $date = now()->subMonths($i);
             
-            $monthName = $this->getSpanishMonth($date->format('F'));
-            $months[] = $monthName;
+            $months[] = $date->translatedFormat('F');
 
-            // Calcular balance: Ingresos - Gastos - Ahorros
-            $monthlyIncome = Income::whereYear('date', $date->year)
+            $monthlyIncome = (float) Income::whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
-                ->sum('amount') ?? 0;
+                ->sum('amount');
 
-            $monthlyExpense = Expense::whereYear('date', $date->year)
+            $monthlyExpense = (float) Expense::whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
-                ->sum('amount') ?? 0;
+                ->sum('amount');
 
-            $monthlySavings = Saving::whereYear('date', $date->year)
+            $monthlySavings = (float) Saving::whereYear('date', $date->year)
                 ->whereMonth('date', $date->month)
-                ->sum('amount') ?? 0;
+                ->sum('amount');
 
-            $balance = $monthlyIncome - $monthlyExpense - $monthlySavings;
-            
-            // Forzar a 0 si es null
-            $balances[] = $balance ?? 0;
-            
-            // Debug (puedes comentar esto después)
-            // \Log::info("Mes: {$monthName}, Ingresos: {$monthlyIncome}, Gastos: {$monthlyExpense}, Ahorros: {$monthlySavings}, Balance: {$balance}");
+            $balances[] = $monthlyIncome - $monthlyExpense - $monthlySavings;
         }
 
         return [
@@ -87,36 +78,11 @@ class BalanceTrendChart extends ChartWidget
                 'tooltip' => [
                     'mode' => 'index',
                     'intersect' => false,
-                    'callbacks' => [
-                        'label' => RawJs::make(<<<'JS'
-                            function(context) {
-                                let label = 'Balance: ';
-                                if (context.parsed.y >= 0) {
-                                    label += '+';
-                                }
-                                label += '$' + context.parsed.y.toLocaleString('en-US', {
-                                    minimumFractionDigits: 2,
-                                    maximumFractionDigits: 2
-                                });
-                                return label;
-                            }
-                        JS),
-                    ],
                 ],
             ],
             'scales' => [
                 'y' => [
-                    'beginAtZero' => true, // Importante: empezar desde 0
-                    'ticks' => [
-                        'callback' => RawJs::make(<<<'JS'
-                            function(value) {
-                                return '$' + value.toLocaleString('en-US', {
-                                    minimumFractionDigits: 0,
-                                    maximumFractionDigits: 0
-                                });
-                            }
-                        JS),
-                    ],
+                    'beginAtZero' => true,
                     'grid' => [
                         'color' => 'rgba(0, 0, 0, 0.05)',
                     ],
@@ -133,23 +99,5 @@ class BalanceTrendChart extends ChartWidget
                 'intersect' => false,
             ],
         ];
-    }
-
-    protected function getSpanishMonth(string $month): string
-    {
-        return [
-            'January' => 'Ene', 
-            'February' => 'Feb', 
-            'March' => 'Mar',
-            'April' => 'Abr', 
-            'May' => 'May', 
-            'June' => 'Jun',
-            'July' => 'Jul', 
-            'August' => 'Ago', 
-            'September' => 'Sep',
-            'October' => 'Oct', 
-            'November' => 'Nov', 
-            'December' => 'Dic',
-        ][$month] ?? $month;
     }
 }
