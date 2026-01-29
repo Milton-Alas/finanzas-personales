@@ -13,6 +13,11 @@ class ExpenseCategorySeeder extends Seeder
      */
     public function run(): void
     {
+        // Si ya hay categorías, no volvemos a sembrar
+        if (ExpenseCategory::query()->exists()) {
+            return;
+        }
+
         $categories = [
             [
                 'name' => 'Alimentación',
@@ -113,10 +118,7 @@ class ExpenseCategorySeeder extends Seeder
         ];
 
         foreach ($categories as $category) {
-            ExpenseCategory::updateOrCreate(
-                ['name' => $category['name']],
-                $category,
-            );
+            ExpenseCategory::create($category);
         }
     }
 }

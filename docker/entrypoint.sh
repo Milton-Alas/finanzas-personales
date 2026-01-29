@@ -6,7 +6,7 @@ echo "Running migrations..."
 php artisan migrate --force
 
 # Seed default expense categories (idempotent)
-php artisan db:seed --class='Database\\Seeders\\ExpenseCategorySeeder' --force
+php artisan db:seed --class=Database\\Seeders\\ExpenseCategorySeeder --force
 
 # Cache optimization
 echo "Optimizing..."
