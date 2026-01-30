@@ -13,7 +13,13 @@ RUN apk add --no-cache \
     postgresql-dev \
     icu-dev \
     supervisor \
-    bash
+    bash \
+    shadow # Necesario para usermod/groupmod
+
+# Sincronizar usuarios: Configurar Nginx para que corra como www-data
+# y asegurar que el ID de www-data sea 1000 (estándar de Docker)
+RUN sed -i 's/user nginx;/user www-data;/g' /etc/nginx/nginx.conf && \
+    usermod -u 1000 www-data && groupmod -g 1000 www-data
 
 # Install PHP extensions
 RUN docker-php-ext-install pdo_pgsql bcmath intl zip opcache gd exif
@@ -39,7 +45,7 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-script
 RUN npm install
 RUN npm run build
 
-# Permissions
+# Permissions: Asegurar que TODO el proyecto pertenezca a www-data (quien corre Nginx y PHP)
 RUN chown -R www-data:www-data /var/www/html && \
     chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
