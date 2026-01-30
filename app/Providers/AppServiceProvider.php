@@ -1,9 +1,10 @@
 <?php
 
 namespace App\Providers;
-
+ 
 use Illuminate\Support\ServiceProvider;
-
+use Illuminate\Support\Facades\URL;
+ 
 // 2. IMPORTA TUS OBSERVERS
 use App\Observers\IncomeObserver;
 use App\Observers\ExpenseObserver;
@@ -31,7 +32,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        if ($this->app->environment('production')) {
+            URL::forceScheme('https');
+        }
+
         Income::observe(IncomeObserver::class);
         Expense::observe(ExpenseObserver::class);
         Transfer::observe(TransferObserver::class);
