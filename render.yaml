@@ -19,6 +19,15 @@ services:
         fromDatabase:
           name: finanzas-db
           property: connectionString
+      - key: SESSION_SECURE_COOKIE
+        value: true
+      - key: SESSION_HTTP_ONLY
+        value: true
+      - key: SESSION_SAME_SITE
+        value: lax
+      - key: PROXIES
+        value: "*"
+
 
 databases:
   - name: finanzas-db
